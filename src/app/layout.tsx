@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
+import NeonCursor from '@/components/NeonCursor'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,8 +27,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pb-16`}
       >
+        <NeonCursor />
         <Header />
         <main className="min-h-screen">{children}</main>
       </body>

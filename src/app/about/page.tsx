@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import Footer from '@/components/Footer'
 
 const GITHUB_USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME || ''
 const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN || ''
@@ -45,7 +46,15 @@ async function getGitHubData(): Promise<{
 }
 
 async function getGithubRepos(): Promise<
-  { id: number; name: string; description: string; url: string }[]
+  {
+    id: number
+    name: string
+    description: string
+    url: string
+    language: string
+    createdAt: string
+    updatedAt: string
+  }[]
 > {
   if (!GITHUB_USERNAME) return []
 
@@ -72,11 +81,17 @@ async function getGithubRepos(): Promise<
         name: string
         description: string
         html_url: string
+        language: string
+        created_at: string
+        updated_at: string
       }) => ({
         id: repo.id,
         name: repo.name,
         description: repo.description,
         url: repo.html_url,
+        language: repo.language || 'Unknown',
+        createdAt: new Date(repo.created_at).toLocaleDateString('ko-KR'),
+        updatedAt: new Date(repo.updated_at).toLocaleDateString('ko-KR'),
       })
     )
   } catch (error) {
@@ -92,8 +107,8 @@ const experienceData = [
   { title: '제 3회 JBU-CTF 문제 출제', date: '2022.10' },
   { title: '2025 핵테온 세종 CTF 참여', date: '2025.04' },
   { title: '정보보안 동아리 S.C.P 활동', date: '2022.04' },
-  { title: '육군 병장 만기전역', date: '2024.09' },
-  { title: '중부대학교 정보보호학전공 입학', date: '2022.03 ' },
+  { title: '제 6회 JBU-CTF 장려상 수상', date: '2025.10' },
+  { title: '정보보안 동아리 S.C.P 2026 임원', date: '2026.XX' },
 ]
 
 const webProjects = [
@@ -166,6 +181,14 @@ const webProjects = [
 
 const otherProjects = [
   <>
+    <strong className="font-semibold">Dev(Sec)Ops Pipeline 구축</strong> :
+    클라우드적 역량을 기르고 DevOps문화를 이해하고자{' '}
+    <span className="inline-block bg-gray-200 px-1 rounded text-xs font-medium text-gray-800">
+      AWS
+    </span>
+    , Jenkins 등 다양한 서비스를 사용했습니다.
+  </>,
+  <>
     <strong className="font-semibold">Fire Wall / Spoofing</strong> : Dos,
     스니핑/스푸핑 위험을 알고{' '}
     <span className="inline-block bg-gray-200 px-1 rounded text-xs font-medium text-gray-800">
@@ -208,30 +231,19 @@ const otherProjects = [
     </span>{' '}
     활용 능력을 높였습니다.
   </>,
-  <>
-    <strong className="font-semibold">DevOps CI/CD 파이프라인 구축</strong> :{' '}
-    <span className="inline-block bg-gray-200 px-1 rounded text-xs font-medium text-gray-800">
-      DevOps
-    </span>
-    문화와{' '}
-    <span className="inline-block bg-gray-200 px-1 rounded text-xs font-medium text-gray-800">
-      Cloud
-    </span>
-    지식을 쌓고 개발부터 배포, 운영 자동화 과정을 진행 중입니다.
-  </>,
 ]
 
 const leftColumn = [
-  experienceData[0],
-  experienceData[2],
-  experienceData[4],
-  experienceData[6],
-]
-const rightColumn = [
+  experienceData[7],
   experienceData[1],
   experienceData[3],
   experienceData[5],
-  experienceData[7],
+]
+const rightColumn = [
+  experienceData[6],
+  experienceData[0],
+  experienceData[2],
+  experienceData[4],
 ]
 
 const GithubIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -316,21 +328,65 @@ const RepoCard = ({
   name,
   description,
   url,
+  language,
 }: {
   name: string
   description: string
   url: string
-}) => (
-  <Link
-    href={url}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="block p-4 border border-gray-300 rounded-lg bg-white hover:border-blue-400 hover:shadow-lg transition-all duration-300"
-  >
-    <h4 className="font-bold text-black mb-1 truncate">{name}</h4>
-    <p className="text-sm text-gray-700 line-clamp-2">{description}</p>
-  </Link>
-)
+  language: string
+}) => {
+  // 언어별 색상 정의
+  const languageColors: Record<string, { bg: string; text: string }> = {
+    TypeScript: { bg: 'bg-blue-100', text: 'text-blue-700' },
+    JavaScript: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
+    Python: { bg: 'bg-blue-500/20', text: 'text-blue-600' },
+    C: { bg: 'bg-slate-100', text: 'text-slate-700' },
+    PHP: { bg: 'bg-purple-100', text: 'text-purple-700' },
+    Shell: { bg: 'bg-green-100', text: 'text-green-700' },
+    HTML: { bg: 'bg-orange-100', text: 'text-orange-700' },
+    CSS: { bg: 'bg-pink-100', text: 'text-pink-700' },
+  }
+
+  const langColor =
+    language !== 'Unknown'
+      ? languageColors[language] || { bg: 'bg-gray-100', text: 'text-gray-700' }
+      : null
+
+  return (
+    <Link
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex flex-col p-5 border border-gray-300 rounded-xl bg-white hover:border-blue-500 hover:shadow-xl transition-all duration-300 h-full"
+    >
+      <div className="flex items-start justify-between mb-3 gap-2">
+        <h4 className="font-bold text-black text-lg line-clamp-2 flex-1">
+          {name}
+        </h4>
+        {langColor && (
+          <span
+            className={`px-3 py-1 ${langColor.bg} ${langColor.text} text-xs font-semibold rounded-full whitespace-nowrap flex-shrink-0`}
+          >
+            {language}
+          </span>
+        )}
+      </div>
+      <p className="text-sm text-gray-600 line-clamp-3 flex-grow">
+        {description || '설명이 없습니다.'}
+      </p>
+      <div className="mt-4 pt-3 border-t border-gray-200">
+        <svg
+          className="w-4 h-4 text-blue-500 inline mr-1"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM15.657 14.243a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM11 17a1 1 0 102 0v-1a1 1 0 10-2 0v1zM5.757 15.657a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM2 10a1 1 0 011-1h1a1 1 0 110 2H3a1 1 0 01-1-1zM5.757 4.343a1 1 0 00-1.414 1.414l.707.707a1 1 0 001.414-1.414l-.707-.707z" />
+        </svg>
+        <span className="text-xs text-gray-500">저장소 방문</span>
+      </div>
+    </Link>
+  )
+}
 
 export default async function About() {
   const githubData = await getGitHubData()
@@ -340,7 +396,7 @@ export default async function About() {
     'hover:shadow-2xl hover:-translate-y-1 transition-all duration-300'
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="min-h-screen bg-transparent">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 flex items-center justify-center">
         <div className="w-full">
           <div className="mx-auto max-w-5xl">
@@ -428,33 +484,6 @@ export default async function About() {
                           2학년
                         </div>
                       </div>
-                    </div>
-
-                    <div className="mt-6 flex space-x-4 justify-end">
-                      <a
-                        href="https://github.com/Interludeal"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gray-800 hover:text-black transition-colors duration-200 p-2 rounded-full hover:bg-gray-100"
-                      >
-                        <GithubIcon className="w-6 h-6" />
-                      </a>
-                      <a
-                        href="https://interludeal.tistory.com/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="transition-colors duration-200 p-2 rounded-full hover:bg-red-100"
-                      >
-                        <TistoryIcon className="w-6 h-6 text-red-600" />
-                      </a>
-                      <a
-                        href="https://www.instagram.com/jaexxeong_bsns"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-pink-600 hover:text-pink-800 transition-colors duration-200 p-2 rounded-full hover:bg-pink-50"
-                      >
-                        <InstagramIcon className="w-6 h-6" />
-                      </a>
                     </div>
                   </div>
                 </div>
@@ -573,6 +602,7 @@ export default async function About() {
                       <TechIcon src="/tech/GCP.png" alt="GCP" w={72} h={72} />
                       <TechIcon src="/tech/MY.png" alt="MY" w={72} h={72} />
                       <TechIcon src="/tech/UNI.png" alt="UNI" w={72} h={72} />
+                      <TechIcon src="/tech/AWS.png" alt="AWS" w={72} h={72} />
                     </div>
                   </div>
                 </div>
@@ -647,6 +677,7 @@ export default async function About() {
                         name={repo.name}
                         description={repo.description || '설명 없음'}
                         url={repo.url}
+                        language={repo.language}
                       />
                     ))
                   ) : (
@@ -673,6 +704,7 @@ export default async function About() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }
