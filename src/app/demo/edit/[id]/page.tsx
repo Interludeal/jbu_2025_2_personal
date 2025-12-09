@@ -27,27 +27,50 @@ export default function EditProject() {
   const [fileName, setFileName] = useState<string>('')
 
   useEffect(() => {
-    if (id) {
-      fetchProject()
+    const fetchProject = async () => {
+      if (!id) return
+      try {
+        const response = await fetch(`/api/projects/${id}`)
+        const data = await response.json()
+
+        if (data.success) {
+          setProject(data.data)
+          setImageUrl(data.data.imgSrc)
+        } else {
+          setError('프로젝트를 불러올 수 없습니다.')
+        }
+      } catch (err) {
+        setError('오류가 발생했습니다.')
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
     }
+    fetchProject()
   }, [id])
 
-  const fetchProject = async () => {
-    try {
-      const response = await fetch(`/api/projects/${id}`)
-      const data = await response.json()
+  const handleDelete = async () => {
+    if (!confirm('정말 삭제하시겠습니까?')) return
 
-      if (data.success) {
-        setProject(data.data)
-        setImageUrl(data.data.imgSrc)
+    try {
+      setSubmitting(true)
+      const response = await fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        alert('프로젝트가 삭제되었습니다!')
+        router.push('/demo')
       } else {
-        setError('프로젝트를 불러올 수 없습니다.')
+        setError(result.message || '프로젝트 삭제에 실패했습니다.')
       }
     } catch (err) {
       setError('오류가 발생했습니다.')
       console.error(err)
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -269,6 +292,14 @@ export default function EditProject() {
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-all duration-200 disabled:bg-gray-400"
             >
               {submitting ? '수정 중...' : '프로젝트 수정'}
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={submitting}
+              className="flex-1 px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all duration-200 disabled:bg-gray-400"
+            >
+              {submitting ? '삭제 중...' : '프로젝트 삭제'}
             </button>
             <Link
               href="/demo"

@@ -8,10 +8,19 @@ if (!MONGODB_URI) {
   )
 }
 
-let cached = (global as any).mongoose
+type CachedConnection = {
+  conn: typeof import('mongoose') | null
+  promise: Promise<typeof import('mongoose')> | null
+}
 
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null }
+declare global {
+  var mongoose: CachedConnection | undefined
+}
+
+const cached = global.mongoose ?? { conn: null, promise: null }
+
+if (!global.mongoose) {
+  global.mongoose = cached
 }
 
 export async function connectToDatabase() {

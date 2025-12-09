@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   images: {
     remotePatterns: [
       {
@@ -8,6 +11,16 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      ignored: [
+        '**/node_modules/**',
+        '**/.next/**',
+        '**/src/app/demo/page_backup.tsx',
+      ],
+    }
+    return config
   },
 }
 

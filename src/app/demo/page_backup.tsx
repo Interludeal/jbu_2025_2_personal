@@ -1,10 +1,4 @@
-'use client'
-
-import Image from 'next/image'
-import Link from 'next/link'
-import { useEffect, useState } from 'react'
-
-interface Project {
+// Deprecated - use src/app/demo/page.tsx
   _id: string
   title: string
   description: string
