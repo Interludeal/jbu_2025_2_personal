@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,34 +30,16 @@ export async function POST(request: NextRequest) {
 
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+    const base64 = buffer.toString('base64')
 
-    // 업로드 폴더 생성
-    const uploadDir = join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true })
-    }
+    // Base64 data URL 생성
+    const dataUrl = `data:${file.type};base64,${base64}`
 
-    // 파일명 생성 (타임스탬프 + 랜덤)
-    const timestamp = Date.now()
-    const random = Math.random().toString(36).substring(2, 15)
-    const fileExtension = file.name.split('.').pop()
-    const fileName = `${timestamp}-${random}.${fileExtension}`
-
-    // 파일 저장
-    const filePath = join(uploadDir, fileName)
-    await writeFile(filePath, buffer)
-
-    // 공개 URL 반환
-    const publicUrl = `/uploads/${fileName}`
-
-    return NextResponse.json(
-      {
-        success: true,
-        url: publicUrl,
-        message: 'File uploaded successfully',
-      },
-      { status: 201 }
-    )
+    return NextResponse.json({
+      success: true,
+      url: dataUrl,
+      message: 'File uploaded successfully',
+    })
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json(
