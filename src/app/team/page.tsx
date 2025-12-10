@@ -165,7 +165,7 @@ export default function Team() {
       skills: ['Python', 'FastAPI', 'MySQL'],
       imgSrc: '/team/Pandyo.png',
       githubUrl: 'https://github.com/Pandyo',
-      blogUrl: 'https://web-server-class-project-01.vercel.app/',
+      blogUrl: 'https://web-server-class-project-03.vercel.app/',
     },
     {
       name: '심재훈',
