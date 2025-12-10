@@ -258,7 +258,7 @@ export default function Team() {
                 {/* 버튼 */}
                 <div className="flex gap-3">
                   <Link
-                    href="https://github.com/Interludeal/2025_2_web_server_security_team"
+                    href="https://github.com/neighborhood-on/neighborhood_on"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-[#5d76b3] text-[#5d76b3] rounded hover:bg-[#5d76b3] hover:text-white transition-colors font-medium text-sm"
@@ -268,7 +268,7 @@ export default function Team() {
                   </Link>
 
                   <Link
-                    href="https://github.com/Interludeal/2025_2_web_server_security_team"
+                    href="https://neighborhood-on-cu5h.vercel.app/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-[#5d76b3] text-[#5d76b3] rounded hover:bg-[#5d76b3] hover:text-white transition-colors font-medium text-sm"
